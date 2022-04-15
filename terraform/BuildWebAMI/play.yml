@@ -1,0 +1,45 @@
+---
+- hosts: all
+  tasks:
+    - name: Install Python3
+      become: yes
+      apt: name=python3 update_cache=yes state=latest
+
+    - name: Install Git package
+      become: yes
+      apt: name=git update_cache=yes state=latest
+
+    - name: ensure apache is at the latest version
+      become: yes
+      apt: name=apache2 update_cache=yes state=latest
+
+    - name: enabled mod_rewrite
+      become: yes
+      apache2_module: name=rewrite state=present
+
+    - name: apache2 listen on port 443
+      become: yes
+      lineinfile: dest=/etc/apache2/ports.conf regexp="^Listen 80" line="Listen 443" state=present
+
+    - name: apache2 virtualhost on port 443
+      become: yes
+      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:80>" line="<VirtualHost *:443>" state=present
+
+    - name: remove default website directory
+      become: yes
+      file:
+        path: /var/www/html
+        state: absent
+
+    - name: Git checkout website
+      become: yes
+      git:
+        repo: https://github.com/cloudacademy/static-website-example
+        dest: /var/www/html
+      notify:
+        - restart apache2
+
+  handlers:
+    - name: restart apache2
+      become: yes
+      service: name=apache2 state=restarted
