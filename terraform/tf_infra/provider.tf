@@ -1,4 +1,11 @@
 provider "aws" {
-    version = ">= 3.63"
-    region  = "var.region"
+    region  = "eu-west-1"
+}
+
+terraform {
+  backend "s3" {
+    bucket         = "terraform-pl-state"
+    key            = "tf_infra/terraform.tfstate"
+    region         = "eu-west-1"
+  }
 }
