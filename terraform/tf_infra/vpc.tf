@@ -1,7 +1,9 @@
+// VPC file, initiate VPC and using a module
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "packer-vpc"
+  name = "vpc"
   cidr = "10.0.0.0/16"
 
   azs              = ["${var.region}a", "${var.region}b", "${var.region}c"]
@@ -17,7 +19,6 @@ module "vpc" {
 }
 
 // Create a Nat instance in the VPC
-
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
@@ -36,10 +37,11 @@ module "ec2_instance" {
   }
 
   depends_on = [
-    aws_security_group.nat_instance_sg
+    aws_security_group.nat_instance_sg // should be created before the instance
   ]
 }
 
+// Create a security group for the NAT instance
 resource "aws_security_group" "nat_instance_sg" {
   name        = "nat-instance-sg"
   description = "Allow instances in the private subnets to access internet."
@@ -66,6 +68,6 @@ resource "aws_security_group" "nat_instance_sg" {
   }
 
   depends_on = [
-    module.vpc
+    module.vpc // should be implicit but still specified here for clarity
   ]
 }
