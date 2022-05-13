@@ -1,4 +1,4 @@
-# DevOps TP2 - Ansible Packer
+# DevOps - Ansible
 
 **Machines**:
 - *ToolsCICD*: 172.16.1.41
@@ -64,7 +64,7 @@ PLAY RECAP *********************************************************************
 172.16.1.201 ansible_ssh_private_key_file=~/.ssh/key.pem
 ```
 
-On utilise un fichier template pour la configuration du virtual host apache.
+We use a template file for the apache virtual host configuration.
 
 *virtualhost.conf*
 ```
@@ -157,7 +157,7 @@ PLAY RECAP *********************************************************************
 
 ---
 
-Vérification sur le remote server:
+Check from the remote server:
 ```
 ubuntu@ip-172-16-1-201:~$
 systemctl status apache2
@@ -176,7 +176,7 @@ systemctl status apache2
            └─31146 /usr/sbin/apache2 -k start
 ```
 
-Vérification depuis le server tool_cicd (après ouverture du port 8080 depuis le subnet 172.16.1.0/24):
+Check from the tool_cicd server (after allowing the port 8080 from the subnet 172.16.1.0/24):
 
 ![](./assets/security_groups_subnet_inbound_remote_server.PNG)
 
@@ -186,7 +186,7 @@ lynx http://172.16.1.201:8080
 curl http://172.16.1.201:8080
 ```
 
-Vérification depuis une machine avec ip publique (après ouverture du port 8080 depuis mon ip):
+Check from a public machine (after allowing port 8080 from my ip):
 
 ![](./assets/security_groups_myip_inbound_remote_server.PNG)
 
