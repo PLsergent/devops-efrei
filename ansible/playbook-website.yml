@@ -1,0 +1,40 @@
+---
+- hosts: remote_server
+  become: yes
+  vars:
+    http_port: 8080
+    domain: html
+
+  tasks:
+    - name: install packages
+      apt:
+        name: ['apache2', 'git']
+        update_cache: yes
+        state: latest
+
+    - name: enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
+
+    - name: apache2 listen on port {{ http_port }}
+      lineinfile: dest=/etc/apache2/ports.conf regexp="^Listen 80" line="Listen {{ http_port }}" state=present
+      notify:
+        - restart apache2
+
+    - name: apache2 virtual host
+      template: src=virtualhost.conf dest=/etc/apache2/sites-available/000-default.conf
+
+    - name: Remove default /var/www/html/
+      file:
+        path: /var/www/html
+        state: absent
+
+    - name: clone basic html template
+      git: repo=https://github.com/cloudacademy/static-website-example.git dest=/var/www/html update=no
+      notify:
+        - restart apache2
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
