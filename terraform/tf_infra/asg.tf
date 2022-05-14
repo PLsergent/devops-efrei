@@ -23,6 +23,7 @@ resource "aws_autoscaling_group" "asg" {
     min_size = 1
     max_size = 4
     vpc_zone_identifier = module.vpc.private_subnets
+    load_balancers = [ aws_elb.elb.id ]
     placement_group = aws_placement_group.asg_placement_group.name
 
     depends_on = [
