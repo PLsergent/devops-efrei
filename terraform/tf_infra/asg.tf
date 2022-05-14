@@ -16,7 +16,7 @@ resource "aws_launch_configuration" "ec2_lc" {
   }
 }
 
-// Terraform auto scaling group resource
+// Auto scaling group resource
 resource "aws_autoscaling_group" "asg" {
     name = "asg-ec2-instance"
     launch_configuration = aws_launch_configuration.ec2_lc.id
@@ -30,4 +30,21 @@ resource "aws_autoscaling_group" "asg" {
       aws_launch_configuration.ec2_lc,
       aws_placement_group.asg_placement_group
     ]
+}
+
+// Auto scaling group policy
+resource "aws_autoscaling_policy" "example" {
+  name = "asg-ec2-instance-policy"
+  adjustment_type = "ChangeInCapacity"
+  scaling_adjustment = 1
+  autoscaling_group_name = aws_autoscaling_group.asg.name
+  cooldown = 300
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = 40.0
+  }
 }
