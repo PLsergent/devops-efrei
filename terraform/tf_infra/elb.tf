@@ -33,17 +33,25 @@ resource "aws_security_group" "elb_sg" {
     vpc_id      = module.vpc.vpc_id
 
     egress {
-        description      = "Allow internet access from elb instance"
+        description      = "Allow private subnets access from elb"
         from_port        = 0
         to_port          = 0
+        protocol         = "-1"
+        cidr_blocks      = module.vpc.private_subnets
+    }
+
+    ingress {
+        description      = "Allow internet access to elb"
+        from_port        = 80
+        to_port          = 80
         protocol         = "-1"
         cidr_blocks      = ["0.0.0.0/0"]
     }
 
     ingress {
-        description      = "Allow internet access to elb instance"
-        from_port        = 80
-        to_port          = 80
+        description      = "Allow internet access to elb"
+        from_port        = 443
+        to_port          = 443
         protocol         = "-1"
         cidr_blocks      = ["0.0.0.0/0"]
     }
